@@ -43,6 +43,7 @@ func (app *application) getBook(w http.ResponseWriter, r *http.Request) {
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
 	}
 	fmt.Fprintf(w, "Display the details of book with ID: %d", idInt)
 }
