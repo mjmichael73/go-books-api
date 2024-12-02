@@ -53,6 +53,7 @@ func (app *application) updateBook(w http.ResponseWriter, r *http.Request) {
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
 	}
 	fmt.Fprintf(w, "Update the details of book with ID: %d", idInt)
 }
@@ -62,6 +63,7 @@ func (app *application) deleteBook(w http.ResponseWriter, r *http.Request) {
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
 	}
 	fmt.Fprintf(w, "Delete the details of book with ID: %d", idInt)
 }
