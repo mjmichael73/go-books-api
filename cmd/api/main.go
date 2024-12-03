@@ -10,36 +10,41 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/mjmichael73/go-books-api/internal/data"
 )
 
 const version = "1.0.0"
 
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "postgres"
+	password = "postgres"
+	dbname   = "readinglist"
+)
+
 type config struct {
 	port int
 	env  string
-	dsn string
 }
 
 type application struct {
 	config config
 	logger *log.Logger
+	models data.Models
 }
 
 func main() {
 	var cfg config
 	flag.IntVar(&cfg.port, "port", 8000, "API Server port")
 	flag.StringVar(&cfg.env, "env", "dev", "Environment (dev|stage|prod)")
-	flag.StringVar(&cfg.dsn, "db-dsn", os.Getenv("READINGLIST_DB_DSN"), "PostgreSQL DSN")
 	flag.Parse()
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
-	app := &application{
-		config: cfg,
-		logger: logger,
-	}
-
-	db, err := sql.Open("postgres", cfg.dsn)
+	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -49,6 +54,12 @@ func main() {
 		logger.Fatal(err)
 	}
 	logger.Printf("database connection pool")
+
+	app := &application{
+		config: cfg,
+		logger: logger,
+		models: data.NewModels(db),
+	}
 
 	addr := fmt.Sprintf(":%d", cfg.port)
 
