@@ -3,6 +3,7 @@ package data
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/lib/pq"
@@ -30,10 +31,12 @@ func (b BookModel) Insert(book *Book) error {
 }
 
 func (b BookModel) Get(id int64) (*Book, error) {
+	fmt.Println("GOT HERE")
 	if id < 1 {
 		return nil, errors.New("record not found")
 	}
-	query := `SELECT id, created_at, title, published, pages, genres, rating, version FROM books WHERE id = $id`
+	query := `SELECT id, created_at, title, published, pages, genres, rating, version FROM books WHERE id = $1`
+	fmt.Println(query)
 	var book Book
 	err := b.DB.QueryRow(query, id).Scan(
 		&book.ID,
@@ -45,6 +48,7 @@ func (b BookModel) Get(id int64) (*Book, error) {
 		&book.Rating,
 		&book.Version,
 	)
+	fmt.Println(err)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
